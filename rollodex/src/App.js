@@ -6,9 +6,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: true,
-      contacts: [],
-      displayContact: 1,
+      isHidden: true, contacts: [], 
     }
   }
 
@@ -18,111 +16,83 @@ class App extends Component {
 
   fetchData() {
     fetch ('https://randomuser.me/api?results=25')
-    .then(response => response.results.json())
+    .then(response => response.json())
     .then(parsedJSON => parsedJSON.results.map(contact => ({
       name: `${contact.name.first} ${contact.name.last}`,
-      location: `${contact.location.city}, ${contact.location.state}`,
+      location: `${contact.location.city}, ${contact.location.state}, ${contact.location.country}`,
       email: `${contact.email}`,
       cell: `${contact.cell}`,
-      picture: `${contact.picture.thumbnail}`
+      username: `${contact.login.username}`,
+      mediumpic: `${contact.picture.medium}`,
+      smallpic: `${contact.picture.thumbnail}`
     })))
     .then(contacts => this.setState({
       contacts,
-      isLoading: false
+      isHidden: true
     }))
     .catch(error => console.log("parsing failed", error))
   }
 
-  // render() {
-  //   let content = null;
-  //   if (this.state.displayContact === 1) {
-  //     content = <div contacts={this.state.contacts} />
-  //   } else if (this.state.displayContact === 0) {
-  //     content = <div contacts={this.state.contacts.name} />
-  //   }
-
-  //   return (
-  //     <div>
-  //       {/* button for showing contact */}
-  //       <button onClick={() => {
-  //         this.setState(() => {
-  //           return {displayContact: 1}
-  //         });
-  //       }}>Show Contact</button>
-
-  //       {/* button for hiding contact */}
-  //       <button onClick={() => {
-  //         this.setState(() => {
-  //           return {displayContact: 0}
-  //         });
-  //       }}>Hide Contact</button>
-
-  //       {/* always displays content that it's supposed to pull */}
-  //       {content}
-
-  //     </div>
-  //   )
-
-
-  // }
-
+  handleClick = () => {
+    let status = this.state.isHidden === true ? false : true
+    this.setState({
+      isHidden: status
+    })
+  }
 
   render() {
-    const {isLoading, contacts} = this.state;
-    return (
-      <div className="whole-page">
-        <header>My Peeps</header>
-        <div className={`content ${isLoading ? 'is-loading' : ''}`}>
-          <div className="contact-info">
-            {
-              !isLoading && contacts.results.length > 0 ? contacts.results.map(contact => {
-                const {name, location, email, cell, picture} = contact;
-                return <div key={contact} title={name}>
-                  <img className="pic-thumbnail"src="{picture}">
-                  <p className="name-line">{name}</p>
-                  {/* <button><img src={logo} alt="like" className="img-responsive"></img></button> */}
-                  <p className="location-line">Location: {location}</p>
-                  <p className="email-line">Email: {email}</p>
-                  <p className="cell-line">Cell: {cell}</p>
-                  <br></br>
-                  </div>
-              }) : null
-            }
+    const {isHidden, contacts} = this.state;
+    if (isHidden) {
+      return (
+        <div>
+          <header><h1>My Peeps</h1></header>
+          <div>
+            <div className="body-container">
+              {
+                contacts.map(contact => {
+                  const {name, username, smallpic} = contact;
+                  return (
+                    <div key={username} title={name} className="list-container">
+                      <button onClick={this.handleClick}>Show Details</button><br></br>
+                      <img src={smallpic} alt="thumbnail"></img>
+                      <p>{name}</p>
+                      <br></br>
+                    </div>
+                  )
+                })
+              }
+            </div>
           </div>
         </div>
-      </div>
-    );
+      )
+    } else if (!isHidden) {
+      return (
+        <div>
+          <header><h1>My Peeps</h1></header>
+          <div>
+            <div className="body-container">
+              {
+                contacts.map(contact => {
+                  const {name, location, email, cell, username, mediumpic} = contact;
+                  return (
+                    <div key={username} title={name} className="list-container">
+                      <button onClick={this.handleClick}>Hide Details</button><br></br>
+                      <img src={mediumpic} alt="thumbnail"></img>
+                      <p>{name}</p>
+                      <p>{location}</p>
+                      <p>{email}</p>
+                      <p>{cell}</p>
+                      <br></br>
+                    </div>
+                  )
+                })
+              }
+            </div>
+          </div>
+        </div>
+      )
+    }
   }
 }
-
-
-
-
-
-
-
-
-
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
 
 export default App;
