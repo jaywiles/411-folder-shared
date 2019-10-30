@@ -75,11 +75,10 @@ class App extends Component {
         <div className={`content ${isLoading ? 'is-loading' : ''}`}>
           <div className="contact-info">
             {
-              // how to do if statement everything is wrapped in????
               !isLoading && contacts.results.length > 0 ? contacts.results.map(contact => {
                 const {name, location, email, cell, picture} = contact;
                 return <div key={contact} title={name}>
-                  {/* <p className="pic-thumbnail">{picture}</p> */}
+                  <img className="pic-thumbnail"src="{picture}">
                   <p className="name-line">{name}</p>
                   {/* <button><img src={logo} alt="like" className="img-responsive"></img></button> */}
                   <p className="location-line">Location: {location}</p>
